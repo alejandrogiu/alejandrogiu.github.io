@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adivina el Pez</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #e0f7fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #fish-container {
+            margin-bottom: 20px;
+        }
+
+        #fish-image {
+            width: 300px;
+            height: auto;
+        }
+
+        #options-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .option-btn {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .option-btn:hover {
+            background-color: #004d40;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #next-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            display: none;
+        }
+
+        #next-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Adivina el Pez</h1>
+    <h2>Falta poco para el gran día de pesca!<br>
+    Si no querés hacer el asado, tenés que responder bien (por lo menos) el 60% de esta prueba.</h2>
+    <div class="game-container">
+        <div id="fish-container">
+            <img id="fish-image" src="placeholder.png" alt="Silueta del pez">
+        </div>
+        <div id="options-container">
+            <button class="option-btn" id="option1"></button>
+            <button class="option-btn" id="option2"></button>
+            <button class="option-btn" id="option3"></button>
+            <button class="option-btn" id="option4"></button>
+        </div>
+        <div id="result"></div>
+        <button id="next-btn">Siguiente</button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fishes = [
+                {
+                    image: 'fish1.png',
+                    correctOption: 'Sábalo',
+                    options: ['Sábalo', 'Tilapia', 'Dorado', 'Pez Globo']
+                },
+                {
+                    image: 'fish2.png',
+                    correctOption: 'Dorado',
+                    options: ['Carpa', 'Sábalo', 'Dorado', 'Pez Payaso']
+                },
+                {
+                    image: 'fish3.png',
+                    correctOption: 'Tilapia',
+                    options: ['Tilapia', 'Bacalao', 'Tiburón', 'Anguila']
+                },
+                {
+                    image: 'fish4.png',
+                    correctOption: 'Corvina',
+                    options: ['Bagre', 'Pez Sapo', 'Corvina', 'Filet de merluza']
+                },
+                {
+                    image: 'fish5.png',
+                    correctOption: 'Trucha',
+                    options: ['Trucha', 'Tarucha', 'Vacío del medio', 'Bagre']
+                },
+            ];
+
+            let currentFishIndex = 0;
+            let correctAnswers = 0;
+
+            function loadFish() {
+                const fish = fishes[currentFishIndex];
+                document.getElementById('fish-image').src = fish.image;
+
+                fish.options.forEach((option, index) => {
+                    document.getElementById(`option${index + 1}`).innerText = option;
+                    document.getElementById(`option${index + 1}`).onclick = () => checkAnswer(option);
+                });
+
+                document.getElementById('result').innerText = '';
+                document.getElementById('next-btn').style.display = 'none';
+            }
+
+            function checkAnswer(selectedOption) {
+                const fish = fishes[currentFishIndex];
+                const resultElement = document.getElementById('result');
+
+                if (selectedOption === fish.correctOption) {
+                    resultElement.innerText = '¡Correcto!';
+                    resultElement.style.color = 'green';
+                    correctAnswers++;
+                } else {
+                    resultElement.innerText = '¡Incorrecto! Era ' + fish.correctOption;
+                    resultElement.style.color = 'red';
+                }
+
+                document.getElementById('next-btn').style.display = 'block';
+            }
+
+            document.getElementById('next-btn').onclick = () => {
+                currentFishIndex++;
+                if (currentFishIndex < fishes.length) {
+                    loadFish();
+                } else {
+                    const percentage = (correctAnswers / fishes.length) * 100;
+                    const grade = (correctAnswers / fishes.length) * 10;
+                    let message = `¡Fin del juego!\n`;
+                    message += `Tu puntuación: ${correctAnswers} de ${fishes.length}\n`;
+                    message += `Porcentaje de aciertos: ${percentage.toFixed(2)}%\n`;
+                    message += `Nota: ${grade.toFixed(2)}/10\n\n`;
+                    if (percentage >= 60) {
+                        message += "¡Felicidades! No tendrás que hacer el asado.";
+                    } else {
+                        message += "Lo siento, te toca hacer el asado.";
+                    }
+                    document.getElementById('result').innerText = message;
+                    document.getElementById('next-btn').style.display = 'none';
+                    document.getElementById('options-container').style.display = 'none';
+                    document.getElementById('fish-image').style.display = 'none';
+                }
+            };
+
+            // Cargar el primer pez al iniciar
+            loadFish();
+        });
+    </script>
+</body>
+</html>
